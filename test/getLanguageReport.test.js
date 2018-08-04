@@ -131,6 +131,7 @@ describe('getLanguageReport', () => {
           message: 'This is an added message'
         }
       ],
+      renamed: [],
       untranslated: [
         {
           key: 'untranslated_message',

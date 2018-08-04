@@ -42,20 +42,27 @@ export default files => {
 
   return files.reduce(
     (fileAcc, { descriptors }) => {
+      const renameIds = fileAcc.renameIds;
       const duplicateIds = fileAcc.duplicateIds;
       return {
-        messages: descriptors.reduce((descAcc, { id, defaultMessage }) => {
+        messages: descriptors.reduce((descAcc, { id, old, defaultMessage }) => {
           if (descAcc[id] !== undefined) {
             duplicateIds.push(id);
           }
 
+          if (old !== undefined) {
+            renameIds[id] = old;
+          }
+
           return { ...descAcc, [id]: defaultMessage };
         }, fileAcc.messages),
+        renameIds,
         duplicateIds
       };
     },
     {
       messages: {},
+      renameIds: {},
       duplicateIds: []
     }
   );

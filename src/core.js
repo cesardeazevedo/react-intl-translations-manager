@@ -40,7 +40,8 @@ export default (languages, hooks) => {
     langResults.report = getLanguageReport(
       defaultMessages.messages,
       file,
-      whitelistFile
+      whitelistFile,
+      defaultMessages.renameIds,
     );
 
     if (typeof reportLanguage === 'function') reportLanguage(langResults);

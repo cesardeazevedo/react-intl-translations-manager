@@ -24,6 +24,7 @@
 
 export const getCleanReport = () => ({
   added: [],
+  renamed: [],
   untranslated: [],
   deleted: [],
   fileOutput: {},
@@ -33,14 +34,18 @@ export const getCleanReport = () => ({
 export default (
   defaultMessages,
   languageMessages = {},
-  languageWhitelist = []
+  languageWhitelist = [],
+  renameIds = [],
 ) => {
   const result = getCleanReport();
 
   const defaultMessageKeys = Object.keys(defaultMessages);
 
   defaultMessageKeys.forEach(key => {
-    const oldMessage = languageMessages[key];
+    const oldMessage = (renameIds[key] && languageMessages[renameIds[key]])
+      ? languageMessages[renameIds[key]]
+      : languageMessages[key];
+
     const defaultMessage = defaultMessages[key];
 
     if (oldMessage) {
@@ -70,10 +75,19 @@ export default (
   // defaultMessages file, then the key was deleted.
   result.deleted = Object.keys(languageMessages)
     .filter(key => defaultMessageKeys.indexOf(key) === -1)
+    .filter(key => Object.values(renameIds).indexOf(key) === -1)
     .map(key => ({
       key,
       message: languageMessages[key]
     }));
+
+  result.renamed = Object.entries(renameIds)
+    .filter(([key]) => languageMessages[renameIds[key]])
+    .map(([newKey, oldKey]) => ({
+      key: newKey,
+      from: oldKey,
+      message: languageMessages[oldKey],
+    }))
 
   return result;
 };
